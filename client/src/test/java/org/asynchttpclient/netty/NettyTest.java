@@ -6,8 +6,10 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
 public class NettyTest {
+    
     @Test
-    public void brotliIsAvailableOnLinux() {
+    public void brotliIsAvailableOnLinux() throws Throwable {
+        Brotli.ensureAvailability();
         assertTrue(Brotli.isAvailable());
     }
 
