@@ -15,6 +15,7 @@ package org.asynchttpclient.netty.request;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.compression.Brotli;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
 import org.asynchttpclient.AsyncHttpClientConfig;
@@ -152,11 +153,14 @@ public final class NettyRequestFactory {
 
       String userDefinedAcceptEncoding = headers.get(ACCEPT_ENCODING);
       if (userDefinedAcceptEncoding != null) {
-        // we don't support Brotly ATM
-        headers.set(ACCEPT_ENCODING, filterOutBrotliFromAcceptEncoding(userDefinedAcceptEncoding));
-
+          if(!Brotli.isAvailable()) {
+              headers.set(ACCEPT_ENCODING, filterOutBrotliFromAcceptEncoding(userDefinedAcceptEncoding));
+          }
       } else if (config.isCompressionEnforced()) {
-        headers.set(ACCEPT_ENCODING, GZIP_DEFLATE);
+          headers.set(ACCEPT_ENCODING, GZIP_DEFLATE);
+          if(Brotli.isAvailable()) {
+              headers.add(ACCEPT_ENCODING, HttpHeaderValues.BR);
+          }
       }
     }
 
